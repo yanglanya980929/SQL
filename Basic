@@ -1,0 +1,57 @@
+#查询每个男学生的学号、姓名和年龄，并按照学号降序排列
+select
+	sid, sname
+	, (curdate())-year(sage) as age #当前年份减去出生年份得到年龄
+from student
+where ssex = '男'
+order by sid desc
+
+#查询学号非空，姓“张”的学生，按照sid升序并取前三条
+select
+	sid, sname
+from student
+where sname like '张%' # 通过like和通配符%进行模糊匹配
+and sid is not null # 学号非空
+order by sid
+limit 3 # 只取前三条
+
+# 一、各子句细节
+# 1. 确定范围（适用于连续范围）
+#查询年龄大于等于10小于等于20的学生
+where sage between 10 and 20 
+
+# 2. 确定集合（适用于离散的少数值）
+# 插入年龄为10,20,30的学生
+where sage in (10,20,30)
+# in可以和not一起使用，表示不在这个区间的值
+where sage not in (10,20,30)
+
+# 3. 字符匹配（模糊查询）
+# 通过like关键字和正则表达式匹配，常用的通配符有%（任意个字符）和_（一个字符）
+# 查询名字sname带“王”的学生
+where sname like “%王%”
+
+# 4. 判断是否为空值
+where sname is not null
+
+# 5. 多个查询条件
+where sage < 20 and ssex = '男'
+
+# 二、其他常用关键字
+1.case when
+# 根据字段的不同值进行不同的操作，存在大量的变形操作可以实现不同的功能，最简单的情形如下：
+# sex字段为1和2，现在要转化为更为直观的文字形式
+case sex
+    when '1' then '男'
+    when '2' then '女'
+else '未知'
+end as sex
+
+2.count+distinct+if实现统计
+# 统计成绩单中及格同学的人数（单个学号可能出现多条记录）
+count(distinct(if(score >= 60,sid,null)))
+
+3.sum+if实现分组统计（这里sum可以替换为其他聚合函数）
+# 获取男性学生的总成绩
+sum(if(sex = '男', score, 0))
+
